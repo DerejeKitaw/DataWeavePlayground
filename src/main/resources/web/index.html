@@ -1,0 +1,63 @@
+<html>
+<head>
+	<title>DataWeave Playground</title>
+	<style type="text/css">
+		textarea {
+		    tab-size: 2;
+		}
+		td, th {
+			padding: 4px;
+		}
+	</style>
+</head>
+<body>
+
+<form method="post" action="/" enctype="multipart/form-data">
+	<div style="text-align:center">
+		<table style="width:90%; margin:auto;">
+			<thead>
+				<tr>
+					<th>Input Payload</th>
+					<th>Transform Message Script</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="width:50%">
+						ContentType: <input type="text" name="inputContentType" value="#[vars.inputContentType default 'application/json']" /><br />
+						<textarea name="inputPayload" rows="20" style="width:100%">#[vars.inputPayload default '']</textarea>
+					</td>
+					<td style="width:50%">
+						<br />
+						<textarea name="script" rows="20" style="width:100%">#[vars.script default '']</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align: center;">
+						<input type="submit" value="Execute">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<textarea name="outputPayload" rows="25" style="width:100%" readonly="readonly">#[payload]</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</form>
+
+<script type="text/javascript">
+var forEach = Array.prototype.forEach;
+var textareaList = document.getElementsByTagName('textarea')
+forEach.call(textareaList, textarea => {
+	textarea.addEventListener('keydown', event => {
+		if (event.key == 'Tab' && !event.ctrlKey && !event.altKey && !event.shiftKey) {
+			event.preventDefault();
+			document.execCommand('insertText', false, '\t');
+		}
+	})});
+</script>
+
+</body>
+</html>

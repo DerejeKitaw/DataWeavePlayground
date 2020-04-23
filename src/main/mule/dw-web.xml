@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="340228b7-c72a-48a5-a5d4-0d9e4491e567" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="dw-webFlow" doc:id="10c6a3d2-9a3c-4048-a4d8-727146390311" >
+		<http:listener doc:name="Listener" doc:id="5583ae65-4d29-48de-90e7-663b61692da2" config-ref="HTTP_Listener_config" path="/" outputMimeType="multipart/form-data" allowedMethods="GET, POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="222771bd-d4eb-457d-9f34-39da5b5d6e97" message="#[payload]"/>
+		<choice doc:name="Choice" doc:id="08015d5c-55b2-4067-8818-f696c147f128" >
+			<when expression='#[attributes.method=="POST"]'>
+				<set-variable value="#[output text/plain
+---
+payload.parts.inputContentType.content]" doc:name="Set inputContentType" doc:id="4c1f9eae-dad5-4fbf-9503-e5b982e1e316" variableName="inputContentType"/>
+				<set-variable value="#[output text/plain
+---
+payload.parts.inputPayload.content]" doc:name="Set inputPayload" doc:id="5e8f3cde-19c0-4835-949a-1153dfe4d242" variableName="inputPayload" />
+				<set-variable doc:name="Set script" doc:id="9e806114-f956-4066-bc30-6649e8628a4a" variableName="script" value="#[output text/plain
+---
+payload.parts.script.content as String]" />
+				<set-payload value='#[output application/dw
+---
+read(vars.inputPayload, vars.inputContentType)]' doc:name="Set Payload" doc:id="7c63aa36-a8e4-4294-b552-638167e91e65" />
+				<try doc:name="Try" doc:id="a7097e6b-b170-4b2f-98f0-5fed562dd5ac">
+					<ee:dynamic-evaluate doc:name="Dynamic Evaluate" doc:id="a5bd973f-0529-4fcb-a05f-0e493713aba3" expression="#[vars.script]" />
+					<error-handler>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="5d4f9ac8-d456-40fa-831a-21d2e100eaf0">
+				<set-payload value="#[error]" doc:name="Set Payload" doc:id="f12435f1-2978-4962-8255-734f242524bc" />
+			</on-error-continue>
+					</error-handler>
+				</try>
+			</when>
+			<otherwise >
+				<set-variable value="application/xml" doc:name="Set inputContentType" doc:id="fe720e93-d98e-4463-9d2c-f4508c2aaea2" variableName="inputContentType" />
+				<set-variable value='#[readUrl("classpath://web/sample.xml", "text/plain")]' doc:name="Set inputPayload" doc:id="c6e49111-2d8b-42c4-804d-a5f15788650c" variableName="inputPayload" />
+				<set-variable value='#[readUrl("classpath://web/sample.dwl", "text/plain")]' doc:name="Set script" doc:id="cad2fd8e-bdf5-4b29-a60d-c33fd68ad962" variableName="script" />
+			</otherwise>
+		</choice>
+		<parse-template doc:name="Parse Template" doc:id="df633d7c-aded-43a8-815e-ef1c334b5d1f" location="web\index.html" />
+	</flow>
+</mule>

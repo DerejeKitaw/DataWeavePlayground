@@ -17,8 +17,6 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 	</http:listener-config>
 	<global-property doc:name="Global Property" doc:id="c23e14d5-15a1-4a55-b6f8-0e92ea9d2daf" name="https.port" value="8082" />
 	<global-property doc:name="Global Property" doc:id="4f8b3639-70c6-4b5a-b7f7-6b1ccb8958e5" name="keystore.password" value="password" />
-	<api-gateway:autodiscovery apiId="${apiId}" doc:name="API Autodiscovery" doc:id="971d43bd-3a09-4a2d-8896-b22330e68a2d" flowRef="dw-webFlow" />
-	<global-property doc:name="Global Property" doc:id="fcf0ee53-b870-4cfe-9c5c-2684327d597a" name="apiId" value="00000000"/>
 	<flow name="dw-webFlow" doc:id="10c6a3d2-9a3c-4048-a4d8-727146390311" >
 		<http:listener doc:name="Listener" doc:id="5583ae65-4d29-48de-90e7-663b61692da2" config-ref="HTTPS_Listener_config" path="/" outputMimeType="multipart/form-data" allowedMethods="GET, POST"/>
 		<logger level="INFO" doc:name="Logger" doc:id="222771bd-d4eb-457d-9f34-39da5b5d6e97" message="#[payload]"/>

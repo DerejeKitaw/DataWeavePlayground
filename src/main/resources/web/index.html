@@ -1,63 +1,101 @@
 <html>
+
 <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 	<title>DataWeave Playground</title>
-	<style type="text/css">
-		textarea {
-		    tab-size: 2;
-		}
-		td, th {
-			padding: 4px;
-		}
-	</style>
 </head>
+
 <body>
-
-<form method="post" action="/" enctype="multipart/form-data">
-	<div style="text-align:center">
-		<table style="width:90%; margin:auto;">
-			<thead>
-				<tr>
-					<th>Input Payload</th>
-					<th>Transform Message Script</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td style="width:50%">
-						ContentType: <input type="text" name="inputContentType" value="#[vars.inputContentType default 'application/json']" /><br />
-						<textarea name="inputPayload" rows="20" style="width:100%">#[vars.inputPayload default '']</textarea>
-					</td>
-					<td style="width:50%">
-						<br />
-						<textarea name="script" rows="20" style="width:100%">#[vars.script default '']</textarea>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2" style="text-align: center;">
-						<input type="submit" value="Execute">
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<textarea name="outputPayload" rows="25" style="width:100%" readonly="readonly">#[payload]</textarea>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+	<div class="container">
+		<form method="post" action="/" enctype="multipart/form-data">
+			<div class="row">
+				<div class="col-xl-6 p-2">
+					<div class="font-weight-bold text-center p-1">Input Payload</div>
+					<div class="row mb-2">
+						<div class="col-xl-12 d-flex align-items-center">
+							<div>ContentType:&nbsp;</div>
+							<input type="text" name="inputContentType" value="#[vars.inputContentType default 'application/json']" class="form-control" />
+						</div>
+					</div>
+					<div class="row d-flex">
+						<div class="col-xl-12 d-flex flex-nowrap align-items-center">
+							<input type="radio" name="inputSource" value="text" id="inputSource-text" class="mr-2" />
+							<textarea name="inputPayload" rows="14"	class="form-control">#[vars.inputPayload default '']</textarea>
+						</div>
+					</div>
+					<div class="row d-flex mt-1">
+						<div class="col-xl-12 d-flex flex-nowrap align-items-center">
+							<input type="radio" name="inputSource" value="file" id="inputSource-file" class="mr-2" />
+							<div class="custom-file">
+								<input type="file" name="inputPayloadFile" class="custom-file-input" id="inputPayloadFile">
+								<label class="custom-file-label" for="inputPayloadFile">Choose file</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xl-6 p-2">
+					<div class="font-weight-bold text-center p-1">Transform Message Script</div>
+					<div class="row">
+						<div class="col-xl-12">
+							<textarea name="script" class="form-control" rows="16">#[vars.script default '']</textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row p-3">
+				<div class="col-xl-12 text-center">
+					<input type="submit" class="btn btn-primary" value="Execute" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xl-12 p-2">
+					<div class="font-weight-bold text-center p-1">Output Payload</div>
+					<textarea name="outputPayload" rows="16" readonly="readonly" class="form-control">#[payload]</textarea>
+				</div>
+			</div>
+		</form>
 	</div>
-</form>
 
-<script type="text/javascript">
-var forEach = Array.prototype.forEach;
-var textareaList = document.getElementsByTagName('textarea')
-forEach.call(textareaList, textarea => {
-	textarea.addEventListener('keydown', event => {
-		if (event.key == 'Tab' && !event.ctrlKey && !event.altKey && !event.shiftKey) {
-			event.preventDefault();
-			document.execCommand('insertText', false, '\t');
-		}
-	})});
-</script>
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+	<script type="text/javascript">
+		bsCustomFileInput.init();
+	</script>
+
+	<script type="text/javascript">
+		// var forEach = Array.prototype.forEach;
+		// var textareaList = document.getElementsByTagName('textarea')
+		// forEach.call(textareaList, textarea => {
+		// 	textarea.addEventListener('keydown', event => {
+		// 		if (event.key == 'Tab' && !event.ctrlKey && !event.altKey && !event.shiftKey) {
+		// 			event.preventDefault();
+		// 			document.execCommand('insertText', false, '\t');
+		// 		}
+		// 	})
+		// });
+
+		// var inputSource = document.getElementById('inputSource-#[vars.inputSource]');
+		// inputSource.checked = true;
+
+		$(function() {
+			$('#inputSource-#[vars.inputSource]').attr('checked', true);
+
+			$('input[type=file]').change(function() {
+				$('#inputSource-file').attr('checked', true);
+			});
+
+			$('textarea').on('keydown', function(event) {
+				if (event.key == 'Tab' && !event.ctrlKey && !event.altKey && !event.shiftKey) {
+					event.preventDefault();
+					document.execCommand('insertText', false, '\t');
+				}
+			})
+		});
+	</script>
 
 </body>
 </html>

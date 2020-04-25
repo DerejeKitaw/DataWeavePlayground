@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
 	<http:listener-config name="HTTPS_Listener_config" doc:name="HTTP Listener config" doc:id="d2097622-74f8-461e-9da4-a8e3735e6b10" >
-		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="${https.port}" >
+		<http:listener-connection host="0.0.0.0" port="${https.port}" protocol="HTTPS">
 			<tls:context >
 				<tls:key-store path="keystore.jks" password="password" keyPassword="${keystore.password}" />
 			</tls:context>
@@ -18,10 +18,13 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 	<global-property doc:name="Global Property" doc:id="c23e14d5-15a1-4a55-b6f8-0e92ea9d2daf" name="https.port" value="8082" />
 	<global-property doc:name="Global Property" doc:id="4f8b3639-70c6-4b5a-b7f7-6b1ccb8958e5" name="keystore.password" value="password" />
 	<flow name="dw-webFlow" doc:id="10c6a3d2-9a3c-4048-a4d8-727146390311" >
-		<http:listener doc:name="Listener" doc:id="5583ae65-4d29-48de-90e7-663b61692da2" config-ref="HTTPS_Listener_config" path="/" outputMimeType="multipart/form-data" allowedMethods="GET, POST"/>
+		<http:listener doc:name="Listener" doc:id="5583ae65-4d29-48de-90e7-663b61692da2" path="/" outputMimeType="multipart/form-data" allowedMethods="GET, POST" config-ref="HTTPS_Listener_config"/>
 		<logger level="INFO" doc:name="Logger" doc:id="222771bd-d4eb-457d-9f34-39da5b5d6e97" message="#[payload]"/>
 		<choice doc:name="Choice" doc:id="08015d5c-55b2-4067-8818-f696c147f128" >
 			<when expression='#[attributes.method=="POST"]'>
+				<set-variable doc:name="Set inputSource" doc:id="793939c9-fe76-45b3-82a3-b88f42563ce1" variableName="inputSource" value="#[output text/plain
+---
+payload.parts.inputSource.content]"/>
 				<set-variable value="#[output text/plain
 ---
 payload.parts.inputContentType.content]" doc:name="Set inputContentType" doc:id="4c1f9eae-dad5-4fbf-9503-e5b982e1e316" variableName="inputContentType"/>
@@ -31,9 +34,18 @@ payload.parts.inputPayload.content]" doc:name="Set inputPayload" doc:id="5e8f3cd
 				<set-variable doc:name="Set script" doc:id="9e806114-f956-4066-bc30-6649e8628a4a" variableName="script" value="#[output text/plain
 ---
 payload.parts.script.content as String]" />
-				<set-payload value='#[output application/dw
+				<choice doc:name="Choice" doc:id="e28b4e45-9eae-4346-93f3-94f58261a9f8">
+					<when expression='#[vars.inputSource == "file"]'>
+						<set-payload value='#[output application/dw
 ---
-read(vars.inputPayload, vars.inputContentType)]' doc:name="Set Payload" doc:id="7c63aa36-a8e4-4294-b552-638167e91e65" />
+payload.parts.inputPayloadFile.content]' doc:name="Set Payload from File" doc:id="1ed58001-2198-43fe-957b-7b4eafb85429" />
+					</when>
+					<otherwise >
+						<set-payload value="#[output application/dw
+---
+read(vars.inputPayload, vars.inputContentType)]" doc:name="Set Payload from Text" doc:id="7c63aa36-a8e4-4294-b552-638167e91e65" />
+					</otherwise>
+				</choice>
 				<try doc:name="Try" doc:id="a7097e6b-b170-4b2f-98f0-5fed562dd5ac">
 					<ee:dynamic-evaluate doc:name="Dynamic Evaluate" doc:id="a5bd973f-0529-4fcb-a05f-0e493713aba3" expression="#[vars.script]" />
 					<error-handler>
@@ -44,6 +56,7 @@ read(vars.inputPayload, vars.inputContentType)]' doc:name="Set Payload" doc:id="
 				</try>
 			</when>
 			<otherwise >
+				<set-variable value="text" doc:name="Set inputSource" doc:id="2ef1431c-2fdc-44e6-8a6d-943d77202838" variableName="inputSource"/>
 				<set-variable value="application/xml" doc:name="Set inputContentType" doc:id="fe720e93-d98e-4463-9d2c-f4508c2aaea2" variableName="inputContentType" />
 				<set-variable value='#[readUrl("classpath://web/sample.xml", "text/plain")]' doc:name="Set inputPayload" doc:id="c6e49111-2d8b-42c4-804d-a5f15788650c" variableName="inputPayload" />
 				<set-variable value='#[readUrl("classpath://web/sample.dwl", "text/plain")]' doc:name="Set script" doc:id="cad2fd8e-bdf5-4b29-a60d-c33fd68ad962" variableName="script" />

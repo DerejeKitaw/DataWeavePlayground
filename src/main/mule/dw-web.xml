@@ -64,4 +64,9 @@ read(vars.inputPayload, vars.inputContentType)]" doc:name="Set Payload from Text
 		</choice>
 		<parse-template doc:name="Parse Template" doc:id="df633d7c-aded-43a8-815e-ef1c334b5d1f" location="web\index.html" />
 	</flow>
+	<flow name="faviconFlow" doc:id="678c6030-93db-4dcf-894e-35e7987f3779" >
+		<http:listener doc:name="Listener" doc:id="5f7b4020-3009-4e41-b603-da5740d82827" config-ref="HTTPS_Listener_config" path="/favicon.ico"/>
+		<file:read doc:name="Read" doc:id="aeddee03-8d16-46b7-a0df-feb749f095e5" path="${app.home}/web/favicon.ico" outputMimeType="application/octet-stream"/>
+	</flow>
+
 </mule>
